@@ -13,24 +13,25 @@ using namespace std::chrono;
 /// <summary>
 /// Defines a series of deadlines. A deadline can be reset by a contact.
 /// </summary>
+template <typename K>
 class Deadlines
 {
     /// <summary>
     /// Defined deadlines.
     /// </summary>
-    std::unordered_map<int, system_clock::duration> definitions;
+    std::unordered_map<K, system_clock::duration> definitions;
 
     /// <summary>
     /// Dictionary of last contacts.
     /// </summary>
-    std::unordered_map<int, time_point<system_clock>> last_contact;
+    std::unordered_map<K, time_point<system_clock>> last_contact;
 
     /// <summary>
     /// Keys that will always be contacted.
     /// </summary>
-    std::pmr::set<int> always_contact;
+    std::pmr::set<K> always_contact;
 
-    bool contact_single(const int key)
+    bool contact_single(const K key)
     {
         if (expired(key))
         {
@@ -51,7 +52,7 @@ public:
     /// </summary>
     /// <param name="key">The key associated with the deadline.</param>
     /// <param name="deadline">The deadline.</param>
-    void setup_deadline(const int key, const system_clock::duration deadline)
+    void setup_deadline(const K key, const system_clock::duration deadline)
     {
         definitions[key] = deadline;
     }
@@ -64,7 +65,7 @@ public:
     /// contacted if s is false.</param>
     /// <param name="s">Controls if the key should always be contacted or
     /// not.</param>
-    void setup_always_contact(const int key, const bool s = true)
+    void setup_always_contact(const K key, const bool s = true)
     {
         if (s)
             always_contact.emplace(key);
@@ -76,7 +77,7 @@ public:
     /// Contacts the key.
     /// </summary>
     /// <param name="key">The key to contact.</param>
-    bool contact(const int& key)
+    bool contact(const K& key)
     {
         const bool expired = contact_single(key);
 
@@ -93,7 +94,7 @@ public:
     /// </summary>
     /// <param name="key">The key to check for expiration.</param>
     /// <returns></returns>
-    [[nodiscard]] bool expired(const int key) const
+    [[nodiscard]] bool expired(const K key) const
     {
         if (last_contact.contains(key))
             return system_clock::now() - last_contact.at(key) > definitions.at(key);

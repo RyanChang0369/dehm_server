@@ -14,8 +14,6 @@ class DeadlineManager
 private:
     DeadlineManager();
 
-    // static DeadlineManager* singleton_instance;
-
     DeadlineManager(const DeadlineManager&) = delete;
     DeadlineManager& operator=(const DeadlineManager&) = delete;
 
@@ -40,7 +38,7 @@ public:
     /// <summary>
     /// The principle deadline object.
     /// </summary>
-    Deadlines deadline;
+    Deadlines<DeadlineType> deadline;
 };
 
 #endif //DEHM_SERVER_DEADLINEMANAGER_H
