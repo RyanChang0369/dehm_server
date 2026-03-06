@@ -99,7 +99,6 @@ bool update_things(const std::unordered_map<int, ClientData*>& catalog)
         DeadlineManager::DeadlineType::logging))
     {
         write_log(catalog);
-
         return true;
     }
 
