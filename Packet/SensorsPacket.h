@@ -18,7 +18,7 @@ private:
 public:
     explicit SensorsPacket(std::istringstream& stream);
 
-    void Serialize(std::ostringstream& stream) override;
+    void serialize(std::ostringstream& stream) override;
 
     const nlohmann::json& get_data() const
     {

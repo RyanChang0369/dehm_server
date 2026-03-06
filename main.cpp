@@ -78,7 +78,7 @@ void write_log(const std::unordered_map<int, ClientData*>& catalog)
     for (const auto& client : catalog | std::views::values)
     {
         std::ostringstream id_stream;
-        client->id.Serialize(id_stream);
+        client->id.serialize(id_stream);
         log[id_stream.str()] = client->history;
     }
 
@@ -88,6 +88,11 @@ void write_log(const std::unordered_map<int, ClientData*>& catalog)
         static_cast<std::streamsize>(json_dumped.length()));
 }
 
+void monitor(const std::unordered_map<int, ClientData*>& catalog)
+{
+    
+}
+
 /// <summary>
 /// Perform localized updates.
 /// </summary>
@@ -95,10 +100,17 @@ void write_log(const std::unordered_map<int, ClientData*>& catalog)
 /// <returns>True if any action was successfully performed.</returns>
 bool update_things(const std::unordered_map<int, ClientData*>& catalog)
 {
-    if (DeadlineManager::singleton()->expired(
-        DeadlineManager::DeadlineType::logging))
+    using enum DeadlineManager::DeadlineType;
+    if (DeadlineManager::singleton()->expired(monitoring))
+    {
+        monitor(catalog);
+        DeadlineManager::singleton()->contact(monitoring);
+        return true;
+    }
+    if (DeadlineManager::singleton()->expired(logging))
     {
         write_log(catalog);
+        DeadlineManager::singleton()->contact(logging);
         return true;
     }
 

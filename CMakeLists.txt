@@ -23,4 +23,6 @@ add_executable(dehm_server
         main.cpp
         ProgramArguments.cpp
         ProgramArguments.h
+        Warning.cpp
+        Warning.h
 )

@@ -27,7 +27,7 @@ public:
     /// Serializes the packet into a character string.
     /// </summary>
     /// <returns>The serialized string.</returns>
-    virtual void Serialize(std::ostringstream& stream);
+    virtual void serialize(std::ostringstream& stream);
 };
 
 

@@ -17,9 +17,14 @@ ClientPacket::ClientPacket(std::istringstream& stream) :
     this->uuid = strtoul(buffer, nullptr, UUID_HEX_SIZE);
 }
 
-void ClientPacket::Serialize(std::ostringstream& stream)
+void ClientPacket::serialize(std::ostringstream& stream)
 {
-    Packet::Serialize(stream);
+    Packet::serialize(stream);
     stream << std::setfill('0') << std::setw(UUID_HEX_SIZE) << std::hex << this
         ->uuid;
+}
+
+long unsigned int ClientPacket::get_uuid() const
+{
+    return uuid;
 }

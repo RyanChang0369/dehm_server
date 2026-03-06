@@ -21,6 +21,7 @@ public:
     enum class DeadlineType : int
     {
         cpu,
+        monitoring,
         logging,
         keep_alive,
     };
@@ -33,6 +34,7 @@ public:
         return singleton_instance;
     }
 
+    bool contact(DeadlineType k);
     bool expired(DeadlineType k) const;
 
     /// <summary>

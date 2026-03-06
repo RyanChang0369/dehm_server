@@ -8,8 +8,8 @@ SensorsPacket::SensorsPacket(std::istringstream& stream) : ClientPacket(stream)
     data = nlohmann::json::parse(stream);
 }
 
-void SensorsPacket::Serialize(std::ostringstream& stream)
+void SensorsPacket::serialize(std::ostringstream& stream)
 {
-    ClientPacket::Serialize(stream);
+    ClientPacket::serialize(stream);
     stream << data.dump();
 }

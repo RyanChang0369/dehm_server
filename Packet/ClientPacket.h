@@ -37,7 +37,8 @@ private:
     
 public:
     explicit ClientPacket(std::istringstream& stream);
-    void Serialize(std::ostringstream& stream) override;
+    void serialize(std::ostringstream& stream) override;
+    [[nodiscard]] long unsigned int get_uuid() const;
 };
 
 

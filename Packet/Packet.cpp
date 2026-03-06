@@ -9,7 +9,7 @@ Packet::Packet(std::istringstream& stream)
     prefix = static_cast<char>(stream.get());
 }
 
-void Packet::Serialize(std::ostringstream& stream)
+void Packet::serialize(std::ostringstream& stream)
 {
     stream << prefix;
 }
