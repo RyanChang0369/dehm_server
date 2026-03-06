@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#include "ClientCatalog.h"
+#include "ClientData.h"
 #include "DeadlineManager.h"
 #include "ProgramArguments.h"
 using namespace std::chrono;

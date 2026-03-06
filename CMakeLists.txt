@@ -14,8 +14,6 @@ add_executable(dehm_server
         Packet/Packet.h
         Packet/SensorsPacket.cpp
         Packet/SensorsPacket.h
-        ClientCatalog.cpp
-        ClientCatalog.h
         ClientData.cpp
         ClientData.h
         ClientID.cpp
