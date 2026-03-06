@@ -3,10 +3,9 @@
 //
 
 
-
 #ifndef DEHM_SERVER_PACKET_H
 #define DEHM_SERVER_PACKET_H
-#include <string>
+#include <sstream>
 
 /// <summary>
 /// A packet/datagram that is responsible for parsing/formatting communications
@@ -14,14 +13,21 @@
 /// </summary>
 class Packet
 {
+private:
+    /// <summary>
+    /// Each packet has a one-character prefix that allows us to distinguish
+    /// between different packet types.
+    /// </summary>
+    char prefix;
+
 public:
-    explicit Packet(const std::string& buffer);
+    explicit Packet(std::istringstream& stream);
 
     /// <summary>
     /// Serializes the packet into a character string.
     /// </summary>
     /// <returns>The serialized string.</returns>
-    virtual std::string Serialize() = 0;
+    virtual void Serialize(std::ostringstream& stream);
 };
 
 

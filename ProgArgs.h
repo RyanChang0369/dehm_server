@@ -10,7 +10,7 @@ struct ProgArgs
 {
     int port = 14050;
     int connections = 8;
-    std::string log_file = "dehm.log";
+    std::string log_file = "dehm_log.json";
 };
 static ProgArgs prog_args;
 
