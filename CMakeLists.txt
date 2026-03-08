@@ -25,4 +25,7 @@ add_executable(dehm_server
         ProgramArguments.h
         Warning.cpp
         Warning.h
+        Packet/HelloPacket.cpp
+        Packet/HelloPacket.h
+        RNG.h
 )

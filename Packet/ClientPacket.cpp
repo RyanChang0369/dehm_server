@@ -8,8 +8,7 @@
 
 #define UUID_HEX_SIZE 16
 
-ClientPacket::ClientPacket(std::istringstream& stream) :
-    Packet(stream)
+ClientPacket::ClientPacket(std::istringstream& stream) : Packet(stream)
 {
     char buffer[UUID_HEX_SIZE];
     stream.read(buffer, sizeof(buffer));
@@ -21,7 +20,7 @@ void ClientPacket::serialize(std::ostringstream& stream)
 {
     Packet::serialize(stream);
     stream << std::setfill('0') << std::setw(UUID_HEX_SIZE) << std::hex << this
-        ->uuid;
+        ->uuid << std::endl;
 }
 
 long unsigned int ClientPacket::get_uuid() const

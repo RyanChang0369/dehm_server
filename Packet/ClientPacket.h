@@ -31,7 +31,7 @@ private:
 
     /// <summary>
     /// Randomly generated UUID to distinguish between clients. This is
-    /// generated and stored by the client.
+    /// generated and stored by the server, and is stored by the client.
     /// </summary>
     long unsigned int uuid;
     
@@ -39,6 +39,12 @@ public:
     explicit ClientPacket(std::istringstream& stream);
     void serialize(std::ostringstream& stream) override;
     [[nodiscard]] long unsigned int get_uuid() const;
+
+private:
+    std::string prefix() override
+    {
+        return "Client";
+    }
 };
 
 

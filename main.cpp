@@ -4,16 +4,21 @@
 #include <bits/this_thread_sleep.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
 #include "ClientData.h"
 #include "DeadlineManager.h"
+#include "HelloPacket.h"
 #include "ProgramArguments.h"
+#include "Warning.h"
 using namespace std::chrono;
 
 /// <summary>
 /// Simulates a 200 kHz processor.
 /// </summary>
 #define CPU_PERIOD  5ms
+
+static std::unordered_map<unsigned long, ClientData*> client_catalog;
 
 [[noreturn]] void main_loop();
 
@@ -24,36 +29,43 @@ int main(const int argc, char* argv[])
     main_loop();
 }
 
-bool receive_messages(std::unordered_map<int, ClientData*>& catalog,
-    const int server_socket, const sockaddr_in server_address)
+bool receive_messages(const int server_socket, const sockaddr_in server_address)
 {
     const int client_fd = accept(server_socket, nullptr, nullptr);
 
     if (client_fd >= 0)
     {
         // Handle valid FD from the client.
-        // TODO: Receive messages
         sockaddr_in client_sock{};
         socklen_t len = sizeof(client_sock);
         char buffer[65536] = {0};
-        recvfrom(client_fd, buffer, sizeof(buffer), 0,
-            reinterpret_cast<sockaddr*>(&client_sock), &len);
+        recvfrom(client_fd, buffer, sizeof(buffer), 0, (sockaddr*)&client_sock,
+            &len);
         std::istringstream buffer_stream(buffer);
-        // const std::string client_ip = inet_ntoa(client_sock.sin_addr);
+        const std::string client_ip = inet_ntoa(client_sock.sin_addr);
 
-        ClientData* client_data;
-        if (!catalog.contains(client_fd))
-        {
-            // New client; setup.
-            client_data = new ClientData(ClientPacket{buffer_stream});
-            catalog[client_fd] = client_data;
-        }
-        else
-        {
-            client_data = catalog.at(client_fd);
-        }
+        std::cout << "New client from: " << client_ip << std::endl;
 
-        client_data->update_history(buffer);
+        std::string prefix;
+        std::getline(buffer_stream, prefix);
+
+        if (prefix == "Hello")
+        {
+            // New client; setup & respond w/ client ID.
+            HelloPacket hello(buffer_stream);
+            std::ostringstream hello_ss;
+            hello.serialize(hello_ss);
+            const auto hello_str = hello_ss.str();
+            sendto(client_fd, hello_str.c_str(), hello_str.length(), 0, nullptr,
+                0);
+            client_catalog[hello.uuid] = new ClientData(hello.uuid);
+        }
+        else if (prefix == "Sensors")
+        {
+            SensorsPacket sensors_packet(buffer_stream);
+            client_catalog[sensors_packet.get_uuid()]->update_history(
+                sensors_packet);
+        }
         return true;
     }
     else if (errno == EWOULDBLOCK)
@@ -71,16 +83,18 @@ bool receive_messages(std::unordered_map<int, ClientData*>& catalog,
     }
 }
 
-void write_log(const std::unordered_map<int, ClientData*>& catalog)
+void write_log()
 {
-    json log;
+    auto log = json();
 
-    for (const auto& client : catalog | std::views::values)
+    for (const ClientData* client : client_catalog | std::views::values)
     {
-        std::ostringstream id_stream;
-        client->id.serialize(id_stream);
-        log[id_stream.str()] = client->history;
+        if (!client->history.empty())
+            log[client->uuid] = client->history;
     }
+    
+    if (log.empty())
+        return;
 
     const std::string json_dumped = log.dump(2);
     std::ofstream log_fh{prog_args.log_file};
@@ -88,9 +102,12 @@ void write_log(const std::unordered_map<int, ClientData*>& catalog)
         static_cast<std::streamsize>(json_dumped.length()));
 }
 
-void monitor(const std::unordered_map<int, ClientData*>& catalog)
+void monitor()
 {
-    
+    for (const auto& client : client_catalog | std::views::values)
+    {
+        Warning::generate_warning(client->history, nullptr);
+    }
 }
 
 /// <summary>
@@ -98,18 +115,18 @@ void monitor(const std::unordered_map<int, ClientData*>& catalog)
 /// </summary>
 /// <param name="catalog">The client catalog.</param>
 /// <returns>True if any action was successfully performed.</returns>
-bool update_things(const std::unordered_map<int, ClientData*>& catalog)
+bool update_things()
 {
     using enum DeadlineManager::DeadlineType;
     if (DeadlineManager::singleton()->expired(monitoring))
     {
-        monitor(catalog);
+        monitor();
         DeadlineManager::singleton()->contact(monitoring);
         return true;
     }
     if (DeadlineManager::singleton()->expired(logging))
     {
-        write_log(catalog);
+        write_log();
         DeadlineManager::singleton()->contact(logging);
         return true;
     }
@@ -122,8 +139,6 @@ bool update_things(const std::unordered_map<int, ClientData*>& catalog)
 /// </summary>
 void main_loop()
 {
-    std::unordered_map<int, ClientData*> catalog{};
-
     // Create server socket (TCP).
     const int server_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK,
         IPPROTO_TCP);
@@ -153,9 +168,9 @@ void main_loop()
         // for one client (simulating a cheap single-threaded microprocessor).
         std::this_thread::sleep_for(CPU_PERIOD);
 
-        if (receive_messages(catalog, server_socket, server_address))
+        if (receive_messages(server_socket, server_address))
             continue;
-        if (update_things(catalog))
+        if (update_things())
             continue;
     }
 }

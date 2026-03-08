@@ -21,22 +21,22 @@ class ClientData
 {
 public:
     /// <summary>
-    /// Packet used as an identification for this data.
+    /// UUID of the client.
     /// </summary>
-    ClientPacket id;
+    unsigned long uuid;
 
     /// <summary>
     /// History of measurements.
     /// </summary>
     json history;
 
-    explicit ClientData(const ClientPacket& id) :
-        id(id) {}
+    explicit ClientData(const unsigned long uuid) :
+        uuid(uuid) {}
 
     /// <summary>
     /// Updates the history of the log file.
     /// </summary>
-    void update_history(const std::string& buffer);
+    void update_history(const SensorsPacket& pkt);
 };
 
 

@@ -5,11 +5,11 @@
 
 SensorsPacket::SensorsPacket(std::istringstream& stream) : ClientPacket(stream)
 {
-    data = nlohmann::json::parse(stream);
+    data = nlohmann::json::parse(decode(stream));
 }
 
 void SensorsPacket::serialize(std::ostringstream& stream)
 {
     ClientPacket::serialize(stream);
-    stream << data.dump();
+    encode(data.dump(), stream);
 }

@@ -24,6 +24,12 @@ public:
     {
         return data;
     }
+
+private:
+    std::string prefix() override
+    {
+        return "Sensors";
+    }
 };
 
 

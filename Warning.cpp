@@ -6,9 +6,16 @@
 
 int Warning::generate_warning(const nlohmann::json& data, Warning* warnings)
 {
-    for (auto elem : data)
+    for (const auto& datapoint : data.items())
     {
-        elem.type();
+        const auto time = datapoint.key();
+        const auto value = datapoint.value();
+
+        for (const auto& metric : value.items())
+        {
+            const auto metric_name = metric.key();
+            const auto metric_value = metric.value();
+        }
     }
     return -1;
 }

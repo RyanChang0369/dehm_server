@@ -9,11 +9,8 @@
 #include <format>
 
 
-void ClientData::update_history(const std::string& buffer)
+void ClientData::update_history(const SensorsPacket& pkt)
 {
-    std::istringstream stream{buffer};
-    const SensorsPacket pkt{stream};
-
     const auto& curr_time = std::format("{0:%F}T{0:%T}",
         round<seconds>(system_clock::now()));
     const auto& data = pkt.get_data();

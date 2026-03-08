@@ -13,20 +13,35 @@
 /// </summary>
 class Packet
 {
-private:
     /// <summary>
-    /// Each packet has a one-character prefix that allows us to distinguish
-    /// between different packet types.
+    /// Defines the specific prefix for this packet.
     /// </summary>
-    char prefix;
+    /// <returns>The generated prefix</returns>
+    virtual std::string prefix() = 0;
 
 public:
+    virtual ~Packet() = default;
+
+    /// <summary>
+    /// Decodes a line.
+    /// </summary>
+    /// <param name="stream">The stream to decode.</param>
+    /// <returns>A decoded line.</returns>
+    static std::string decode(std::istringstream& stream);
+
     explicit Packet(std::istringstream& stream);
+
+    /// <summary>
+    /// Encodes a line.
+    /// </summary>
+    /// <param name="line">The line to encode.</param>
+    /// <param name="stream">The string stream.</param>
+    static void encode(const std::string& line, std::ostringstream& stream);
 
     /// <summary>
     /// Serializes the packet into a character string.
     /// </summary>
-    /// <returns>The serialized string.</returns>
+    /// <param name="stream">The serialized stream.</param>
     virtual void serialize(std::ostringstream& stream);
 };
 
