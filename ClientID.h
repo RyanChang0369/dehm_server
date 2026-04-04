@@ -26,7 +26,7 @@ struct ClientID
     /// </summary>
     std::string uuid;
     
-    ClientID(const char* ipAddress, const char* hostname, const char* uuid);
+    ClientID(const char* ip_address, const char* hostname, const char* uuid);
 };
 
 

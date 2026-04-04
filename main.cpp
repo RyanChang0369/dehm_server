@@ -113,7 +113,6 @@ void monitor()
 /// <summary>
 /// Perform localized updates.
 /// </summary>
-/// <param name="catalog">The client catalog.</param>
 /// <returns>True if any action was successfully performed.</returns>
 bool update_things()
 {

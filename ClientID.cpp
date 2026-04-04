@@ -3,12 +3,12 @@
 /// <summary>
 /// 
 /// </summary>
-/// <param name="ipAddress">Address of the client.</param>
+/// <param name="ip_address">Address of the client.</param>
 /// <param name="hostname">Hostname of the client.</param>
 /// <param name="uuid">Random UUID</param>
-ClientID::ClientID(const char* ipAddress, const char* hostname, const char* uuid)
+ClientID::ClientID(const char* ip_address, const char* hostname, const char* uuid)
 {
-    this->ipAddress = ipAddress;
+    this->ipAddress = ip_address;
     this->hostname = hostname;
     this->uuid = uuid;
 }
